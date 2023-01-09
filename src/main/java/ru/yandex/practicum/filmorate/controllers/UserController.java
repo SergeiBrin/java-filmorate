@@ -66,16 +66,16 @@ public class UserController {
         boolean isBirthdayCorrect = checkBirthday(user.getBirthday());
 
         switch (methodName) {
-            case "POST" -> {
+            case "POST":
                 if (user.getId() != 0) {
                     exceptionMessage.add("В метод POST нельзя передавать id пользователя");
                 }
-            }
-            case "PUT" -> {
+                break;
+            case "PUT":
                 if (!isThereAnId) {
                     exceptionMessage.add("Пользователя с таким id нет");
                 }
-            }
+                break;
         }
 
         if (!isLoginCorrect) {

@@ -64,17 +64,18 @@ public class FilmController {
         boolean isDurationCorrect = checkDuration(film.getDuration());
 
         switch (methodName) {
-            case "POST" -> {
+            case "POST":
                 if (film.getId() != 0) {
                     exceptionMessage.add("В метод POST нельзя передавать id фильма");
                 }
-            }
-            case "PUT" -> {
+                break;
+            case "PUT":
                 if (!isThereAnId) {
                     exceptionMessage.add("Фильма с таким id нет");
                 }
-            }
+                break;
         }
+
 
         if (!isNameCorrect) {
             exceptionMessage.add("Название фильма пустое");
