@@ -2,276 +2,82 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerTest {
-    private UserController userController;
-    private User user1;
-    private User user2;
+    private Validator validator;
+    private Set<ConstraintViolation<User>> violations;
+    private User user;
 
     @BeforeEach
-    public void createObjects() {
-        userController = new UserController();
+    public void create() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
 
-        user1 = new User(0,
-                "user1 name",
-                "login1",
+        user = new User(0,
+                "name",
+                "login",
                 LocalDate.now(),
-                "user1@gmail.com");
-
-        user2 = new User(0,
-                "user2 name",
-                "login2",
-                LocalDate.of(1980, 1, 20),
-                "user2@gmail.com");
-    }
-
-
-    // GET проверки
-    @Test
-    public void getMethodShouldReturnAnEmptyList() {
-        List<User> getUsers = userController.getAllUsers();
-
-        assertTrue(getUsers.isEmpty());
+                "user@gmail.com");
     }
 
     @Test
-    public void getMethodShouldReturnListWithObjects() {
-        userController.postUser(user1);
-        userController.postUser(user2);
+    public void userWithCorrectParametersShouldBeValidated() {
+        violations = validator.validate(user);
 
-        user1 = new User(1,
-                "user1 name",
-                "login1",
-                LocalDate.now(),
-                "user1@gmail.com");
-
-        user2 = new User(2,
-                "user2 name",
-                "login2",
-                LocalDate.of(1980, 1, 20),
-                "user2@gmail.com");
-
-        final List<User> postUsers = List.of(user1, user2);
-        final List<User> getUsers = userController.getAllUsers();
-
-        assertEquals(postUsers, getUsers);
+        assertTrue(violations.isEmpty());
     }
 
-    // POST проверки
+    // Проверка на граничные с валидацией значения
     @Test
-    public void emptyRequestWillNotBeAddedViaPostMethod() {
-        final ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.postUser(null));
+    public void userMustNotBeValidatedWithAnEmptyEmailOrNotContainingSignAt() {
+        user.setEmail(null);
+        violations = validator.validate(user);
 
-        final List<User> getUsers = userController.getAllUsers();
+        assertEquals(1, violations.size());
 
-        assertEquals("POST: [Запрос пустой]", exception.getMessage());
-        assertTrue(getUsers.isEmpty());
+        user.setEmail("usergmail.com");
+        violations = validator.validate(user);
+
+        assertEquals(1, violations.size());
     }
 
     @Test
-    public void postMethodWithCorrectParametersShouldWork() {
-        userController.postUser(user1);
-        final List<User> getUsers = userController.getAllUsers();
+    public void userMustNotValidateWithAnEmptyOrContainingSpacesLogin() {
+        user.setLogin("");
+        violations = validator.validate(user);
 
-        assertEquals(user1, getUsers.get(0));
+        // Тут 2, потому что отрабатывает сразу 2 аннотации.
+        assertEquals(2, violations.size());
+
+        user.setLogin("login name");
+        violations = validator.validate(user);
+
+        assertEquals(1, violations.size());
     }
 
     @Test
-    public void userWithEmptyEmailWillNotBeAddedViaPostMethod() {
-        user1.setEmail("");
+    public void userMustBeValidatedIfUsernameIsEmpty() {
+        user.setName("");
+        violations = validator.validate(user);
 
-        final ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.postUser(user1));
-
-        final List<User> getUsers = userController.getAllUsers();
-
-        assertEquals("POST: [email пустой или не содержит символ @]", exception.getMessage());
-        assertTrue(getUsers.isEmpty());
+        assertTrue(violations.isEmpty());
     }
 
     @Test
-    public void userWithEmailWithoutAtWillNotBeAddedViaPostMethod() {
-        user1.setEmail("user1gmail.com");
+    public void userShouldNotBeValidatedIfHisDateOfBirthIsInTheFuture() {
+        user.setBirthday(LocalDate.now().plusDays(1));
+        violations = validator.validate(user);
 
-        final ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.postUser(user1));
-
-        final List<User> getUsers = userController.getAllUsers();
-
-        assertEquals("POST: [email пустой или не содержит символ @]", exception.getMessage());
-        assertTrue(getUsers.isEmpty());
-    }
-
-    @Test
-    public void userWithAnEmptyLoginWillNotBeAddedViaPostMethod() {
-        user1.setLogin("");
-
-        final ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.postUser(user1));
-
-        final List<User> getUsers = userController.getAllUsers();
-
-        assertEquals("POST: [login пустой или содержит пробелы]", exception.getMessage());
-        assertTrue(getUsers.isEmpty());
-    }
-
-    @Test
-    public void userWithSpacesInLoginWillNotBeAddedViaPostMethod() {
-        user1.setLogin("login 1");
-
-        final ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.postUser(user1));
-
-        final List<User> getUsers = userController.getAllUsers();
-
-        assertEquals("POST: [login пустой или содержит пробелы]", exception.getMessage());
-        assertTrue(getUsers.isEmpty());
-    }
-
-    @Test
-    public void ifNameIsEmptyNameWillBeLoginViaPostMethod() {
-        user1.setName("");
-        userController.postUser(user1);
-
-        assertEquals(user1.getLogin(), user1.getName());
-    }
-
-    @Test
-    public void userWithDateOfBirthInFutureWillNotBeAddedViaPostMethod() {
-        user1.setBirthday(LocalDate.now().plusDays(1));
-
-        final ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.postUser(user1));
-
-        final List<User> getUsers = userController.getAllUsers();
-
-        assertEquals("POST: [birthday в будущем]", exception.getMessage());
-        assertTrue(getUsers.isEmpty());
-    }
-
-    // PUT проверки
-    @Test
-    public void emptyRequestWillNotBeAddedViaPutMethod() {
-        userController.postUser(user1);
-
-        final ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.putUser(null));
-
-        final List<User> getUsers = userController.getAllUsers();
-
-        assertEquals("PUT: [Запрос пустой]", exception.getMessage());
-        assertEquals(user1, getUsers.get(0));
-    }
-
-    @Test
-    public void putMethodWithCorrectParametersShouldWork() {
-        userController.postUser(user1);
-
-        user2.setId(1);
-        userController.putUser(user2);
-
-        final List<User> getUsers = userController.getAllUsers();
-
-        assertEquals(user2, getUsers.get(0));
-    }
-
-    @Test
-    public void userWithEmptyEmailWillNotBeAddedViaPutMethod() {
-        userController.postUser(user1);
-
-        user2.setId(1);
-        user2.setEmail("");
-
-        final ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.putUser(user2));
-
-        final List<User> getUsers = userController.getAllUsers();
-
-        assertEquals("PUT: [email пустой или не содержит символ @]", exception.getMessage());
-        assertEquals(user1, getUsers.get(0));
-    }
-
-    @Test
-    public void userWithEmailWithoutAtWillNotBeAddedViaPutMethod() {
-        userController.postUser(user1);
-
-        user2.setId(1);
-        user2.setEmail("user2gmail.com");
-
-        final ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.putUser(user2));
-
-        final List<User> getUsers = userController.getAllUsers();
-
-        assertEquals("PUT: [email пустой или не содержит символ @]", exception.getMessage());
-        assertEquals(user1, getUsers.get(0));
-    }
-
-    @Test
-    public void userWithAnEmptyLoginWillNotBeAddedViaPutMethod() {
-        userController.postUser(user1);
-
-        user2.setId(1);
-        user2.setLogin("");
-
-        final ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.putUser(user2));
-
-        final List<User> getUsers = userController.getAllUsers();
-
-        assertEquals("PUT: [login пустой или содержит пробелы]", exception.getMessage());
-        assertEquals(user1, getUsers.get(0));
-    }
-
-    @Test
-    public void userWithSpacesInLoginWillNotBeAddedViaPutMethod() {
-        userController.postUser(user1);
-
-        user2.setId(1);
-        user2.setLogin("login 2");
-
-        final ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.putUser(user2));
-
-        final List<User> getUsers = userController.getAllUsers();
-
-        assertEquals("PUT: [login пустой или содержит пробелы]", exception.getMessage());
-        assertEquals(user1, getUsers.get(0));
-    }
-
-    @Test
-    public void ifNameIsEmptyNameWillBeLoginViaPutMethod() {
-        userController.postUser(user1);
-
-        user2.setId(1);
-        user2.setName("");
-
-        userController.putUser(user2);
-
-        assertEquals(user2.getLogin(), user2.getName());
-    }
-
-    @Test
-    public void userWithDateOfBirthInFutureWillNotBeAddedViaPutMethod() {
-        userController.postUser(user1);
-
-        user2.setId(1);
-        user2.setBirthday(LocalDate.now().plusDays(1));
-
-        final ValidationException exception = assertThrows(ValidationException.class,
-                () -> userController.putUser(user2));
-
-        final List<User> getUsers = userController.getAllUsers();
-
-        assertEquals("PUT: [birthday в будущем]", exception.getMessage());
-        assertEquals(user1, getUsers.get(0));
+        assertEquals(1, violations.size());
     }
 }
