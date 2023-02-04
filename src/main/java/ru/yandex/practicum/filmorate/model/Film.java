@@ -4,15 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validannotation.FilmReleaseDateConstraint;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 public class Film {
-    private int id;
+    private long id; // Может сделать Integer?
     @NotBlank
     private String name;
     @Size(max=200)
@@ -21,4 +21,16 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private long duration;
+    @PositiveOrZero
+    private long rate;
+    @NotNull
+    private final Set<Long> likes = new HashSet<>();
+
+    public boolean addLike(Long userId) {
+        return likes.add(userId);
+    }
+
+    public boolean deleteLike(Long userId) {
+        return likes.remove(userId);
+    }
 }
