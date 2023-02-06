@@ -3,71 +3,49 @@ package ru.yandex.practicum.filmorate.controllers.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.user.UserService;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.validation.validator.Validator;
 
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
-    private final UserStorage userStorage;
     private final UserService userService;
+    private final Validator validator;
 
     @Autowired
-    public UserController(InMemoryUserStorage userStorage, UserService userService) {
-        this.userStorage = userStorage;
+    public UserController(UserService userService, Validator validator) {
         this.userService = userService;
+        this.validator = validator;
     }
 
     // получение списка всех пользователей
     @GetMapping
     public List<User> getAllUsers() {
-        return userStorage.getAllUsers();
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{userId}")
     public User getUserById(@PathVariable Long userId) {
-        if (userStorage.getUserById(userId) == null) {
-            throw new UserNotFoundException(String.format("Пользователя с таким %d нет", userId));
-        }
-
-        return userStorage.getUserById(userId);
+        validator.checkUserByPathVariableId(userId);
+        return userService.getUserById(userId);
     }
 
     @GetMapping("{userId}/friends")
     public List<User> getUserFriendsList(@PathVariable Long userId) {
-        if (userId == null) {
-            throw new ValidationException("Id пользователя не передан в PathVariable");
-        }
-
-        if (userStorage.getUserById(userId) == null) {
-            throw new UserNotFoundException(String.format("Пользователя с таким %d нет", userId));
-        }
-
+        validator.checkUserByPathVariableId(userId);
         return userService.getUserFriendsList(userId);
     }
 
     @GetMapping("/{userId}/friends/common/{friendId}")
     public List<User> getListOfMutualFriends(@PathVariable Long userId,
                                              @PathVariable Long friendId) {
-        if (userId == null || friendId == null) {
-            throw new ValidationException("Id пользователя и/друга не передан в PathVariable");
-        }
-
-        if (userStorage.getUserById(userId) == null) {
-            throw new UserNotFoundException(String.format("Пользователя с таким %d нет", userId));
-        }
-
-        if (userStorage.getUserById(friendId) == null) {
-            throw new UserNotFoundException(String.format("Пользователя с таким %d нет", friendId));
-        }
+        validator.checkUserByPathVariableId(userId);
+        validator.checkUserByPathVariableId(friendId);
 
         return userService.getListOfMutualFriends(userId, friendId);
     }
@@ -75,33 +53,21 @@ public class UserController {
     // создание пользователя
     @PostMapping
     public User postUser(@Valid @RequestBody User user) {
-        return userStorage.postUser(user);
+        return userService.postUser(user);
     }
 
     // обновление пользователя
     @PutMapping
     public User putUser(@Valid @RequestBody User user) {
-        if (userStorage.getUserById(user.getId()) == null) {
-            throw new UserNotFoundException(String.format("Пользователя с таким %d нет", user.getId()));
-        }
-
-        return userStorage.putUser(user);
+        validator.checkIfUserExistsById(user);
+        return userService.putUser(user);
     }
 
     @PutMapping("/{userId}/friends/{friendId}")
     public User putFriendsToUser(@PathVariable Long userId,
                                  @PathVariable Long friendId) {
-        if (userId == null || friendId == null) {
-            throw new ValidationException("Id пользователя и/друга не передан в PathVariable");
-        }
-
-        if (userStorage.getUserById(userId) == null) {
-            throw new UserNotFoundException(String.format("Пользователя с таким %d нет", userId));
-        }
-
-        if (userStorage.getUserById(friendId) == null) {
-            throw new UserNotFoundException(String.format("Пользователя с таким %d нет", friendId));
-        }
+        validator.checkUserByPathVariableId(userId);
+        validator.checkUserByPathVariableId(friendId);
 
         return userService.putFriendsToUser(userId, friendId);
     }
@@ -109,17 +75,8 @@ public class UserController {
     @DeleteMapping("/{userId}/friends/{friendId}")
     public User deleteFriendFromUser(@PathVariable Long userId,
                                      @PathVariable Long friendId) {
-        if (userId == null || friendId == null) {
-            throw new ValidationException("Id пользователя и/друга не передан в PathVariable");
-        }
-
-        if (userStorage.getUserById(userId) == null) {
-            throw new UserNotFoundException(String.format("Пользователя с таким %d нет", userId));
-        }
-
-        if (userStorage.getUserById(friendId) == null) {
-            throw new UserNotFoundException(String.format("Пользователя с таким %d нет", friendId));
-        }
+        validator.checkUserByPathVariableId(userId);
+        validator.checkUserByPathVariableId(friendId);
 
         return userService.deleteFriendFromUser(userId, friendId);
     }
