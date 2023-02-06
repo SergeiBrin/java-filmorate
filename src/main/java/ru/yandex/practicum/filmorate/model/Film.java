@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.validannotation.FilmReleaseDateConstraint;
+import ru.yandex.practicum.filmorate.validation.annotation.FilmReleaseDateConstraint;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
@@ -12,7 +12,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 public class Film {
-    private long id; // Может сделать Integer?
+    private long id;
     @NotBlank
     private String name;
     @Size(max=200)
