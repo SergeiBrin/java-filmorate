@@ -20,6 +20,14 @@ public class FilmService {
         this.filmStorage = filmStorage;
     }
 
+    public List<Film> getAllFilms() {
+        return filmStorage.getAllFilms();
+    }
+
+    public Film getFilmById(Long filmId)  {
+        return filmStorage.getFilmById(filmId);
+    }
+
     public List<Film> getMostPopularFilm(Long count) {
         return filmStorage.getPopularFilms()
                 .stream()
@@ -27,17 +35,25 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
-    public Film likeTheFilm(Long filmId, Long userId) {
-        Film film = filmStorage.getFilmById(filmId);
-        film.addLike(userId);
-        filmStorage.updatePopularFilms(film);
+    public Film postFilm(Film film) {
+        return filmStorage.postFilm(film);
+    }
 
-        return film;
+    public Film putFilm(Film film) {
+        return filmStorage.putFilm(film);
     }
 
     public Film deleteLikeForFilm(Long filmId, Long userId) {
         Film film = filmStorage.getFilmById(filmId);
         film.deleteLike(userId);
+        filmStorage.updatePopularFilms(film);
+
+        return film;
+    }
+
+    public Film likeTheFilm(Long filmId, Long userId) {
+        Film film = filmStorage.getFilmById(filmId);
+        film.addLike(userId);
         filmStorage.updatePopularFilms(film);
 
         return film;

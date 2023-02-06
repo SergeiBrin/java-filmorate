@@ -19,6 +19,14 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
+    public List<User> getAllUsers() {
+        return userStorage.getAllUsers();
+    }
+
+    public User getUserById(Long userId) {
+        return userStorage.getUserById(userId);
+    }
+
     public List<User> getUserFriendsList(Long userId) {
         List<User> friends = new ArrayList<>();
         User user = userStorage.getUserById(userId);
@@ -47,6 +55,14 @@ public class UserService {
         }
 
         return friends;
+    }
+
+    public User postUser(User user) {
+        return userStorage.postUser(user);
+    }
+
+    public User putUser(User user) {
+        return userStorage.putUser(user);
     }
 
     public User putFriendsToUser(Long userId, Long friendId) {
