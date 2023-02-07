@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.validation.validator;
 
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
@@ -13,7 +12,6 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import javax.validation.ValidationException;
 
 @Service
-@Data
 public class Validator {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
