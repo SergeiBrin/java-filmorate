@@ -6,7 +6,7 @@ Template repository for Filmorate project
 
 # Database diagram  
 ## Краткое описание
-Database Diagram - это ER диаграмма, которая описывает структуру хранения базы данных приложения Filmorate. 
+Database Diagram - это ER диаграмма, которая описывает структуру базы данных для приложения Filmorate. 
 
   В приложении Filmorate есть 2 основные сущности - пользователи (User) и фильмы (Film), которые хранятся в базе данных, а также взаимодействуют между собой. Система хранения в Database Diagram устроена следующим образом:
 1. **film** - таблица, которая хранит фильмы;
@@ -55,8 +55,7 @@ FROM user;
 ```
 6. **Получить список друзей пользователя**
 ```sql 
-SELECT user.id, -- id друга
-       user.name -- имя друга
+SELECT *
 FROM user
 WHERE user.id IN (SELECT top.friend_id
                   FROM(SELECT *
@@ -68,6 +67,10 @@ WHERE user.id IN (SELECT top.friend_id
 ```
 7. **Получить список общих друзей у двух пользователей**
 ```sql 
+1. вернуть id друзей одного пользователя
+2. вернуть id друзей другого пользователя
+3. user_id1 IN user_id2
+
 SELECT *
 FROM user;
 ``` 
