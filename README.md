@@ -4,7 +4,9 @@ Template repository for Filmorate project
   
 ![Image database diagram](https://github.com/SergeiBrin/java-filmorate/blob/controllers-films-users/Diagram%20Filmorate.png)
 
-# Database diagram
+# Database diagram  
+## Краткое описание
+
 ## Описание основных операций:
 
 
