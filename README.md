@@ -53,3 +53,19 @@ ORDER BY f.film_id;
 SELECT *
 FROM user;
 ```
+6. **Получить список друзей пользователя**
+```sql 
+SELECT user.id, -- id друга
+       user.name -- id пользователя
+FROM user
+WHERE user.id IN (SELECT top.friend_id
+                  FROM(SELECT *
+                       FROM friendship AS fr
+                       LEFT JOIN user AS us ON us.user_id = fr.user_id) AS top
+                  WHERE top.user_id = 1 AND top.status_id = 1); -- top.user_id = 1 - id пользователя, чей список друзей нужно вернуть
+```
+7. **Получить список общих друзей у двух пользователей**
+```sql 
+SELECT *
+FROM user;
+``` 
