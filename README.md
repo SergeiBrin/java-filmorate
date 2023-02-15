@@ -38,4 +38,18 @@ FROM film AS f
 LEFT JOIN film_genre AS fg ON f.film_id = fg.film_id
 LEFT JOIN genre AS g ON fg.genre_id = g.genre_id;
 ```
-
+4. **Получить список фильмов - каждый с количеством лайков**
+```sql 
+SELECT f.film_id, 
+       f.name,
+       COUNT(l.user_id)
+FROM film AS f
+LEFT JOIN like AS l ON f.film_id = l.film_id
+GROUP BY f.film_id, f.name, l.user_id
+ORDER BY f.film_id;
+```  
+5. **Получить список пользователей**
+```sql 
+SELECT *
+FROM user;
+```
