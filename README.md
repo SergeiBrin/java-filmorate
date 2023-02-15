@@ -24,5 +24,18 @@ Database Diagram - это ER диаграмма, которая описывае
 SELECT *
 FROM film;
 ```
-
+2. **Получить список популярных фильмов**
+```sql
+SELECT *
+FROM popular_films AS pf
+JOIN film AS f ON pf.film_id = f.film_id
+ORDER BY pf.popular_id;
+```
+3. **Получить список фильмов с названиями жанров**
+```sql
+SELECT *
+FROM film AS f
+LEFT JOIN film_genre AS fg ON f.film_id = fg.film_id
+LEFT JOIN genre AS g ON fg.genre_id = g.genre_id;
+```
 
