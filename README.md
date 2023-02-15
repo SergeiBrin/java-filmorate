@@ -63,7 +63,8 @@ WHERE user.id IN (SELECT top.friend_id
                        FROM friendship AS fr
                        LEFT JOIN user AS us ON us.user_id = fr.user_id) AS top
                   WHERE top.user_id = 1 AND top.status_id = 1); 
-                  -- top.user_id = 1 - это id пользователя, чей список друзей нужно вернуть
+                     -- top.user_id = 1 - это id пользователя, 
+                     -- чей список друзей нужно вернуть
 ```
 7. **Получить список общих друзей у двух пользователей**
 ```sql 
