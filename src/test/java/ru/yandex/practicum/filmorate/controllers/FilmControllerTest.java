@@ -33,7 +33,8 @@ class FilmControllerTest {
                 "F",
                 description.substring(0, 200),
                 LocalDate.of(1895, 12, 28),
-                1);
+                1,
+                0);
     }
 
     // Проверка на граничные c валидацией значения.
@@ -76,6 +77,14 @@ class FilmControllerTest {
         assertEquals(1, violations.size());
 
         film.setDuration(0);
+        violations = validator.validate(film);
+
+        assertEquals(1, violations.size());
+    }
+
+    @Test
+    public void filmMustNotPassValidationWithNegativeRating() {
+        film.setRate(-1);
         violations = validator.validate(film);
 
         assertEquals(1, violations.size());
