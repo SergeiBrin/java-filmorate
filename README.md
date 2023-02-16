@@ -72,8 +72,8 @@ WHERE  us.user_id IN (SELECT f.friend_id    -- Берем id друзей пер
                       FROM friendship AS f  -- Cовпадения пробрасываем дальше, где они сравниваются с id всех пользователей,
                       WHERE f.user_id = 1   -- и совпадения - то есть данные общих друзей выводятся на экран. 
                       AND f.status_id = 1   
-                      AND f.friend_id IN (SELECT DISTINCT f.friend_id -- Берем id друзей второго пользователя
-                                          FROM friendship AS f 
+                      AND f.friend_id IN (SELECT DISTINCT f.friend_id -- Берем id друзей второго пользователя и пробрасываем выше 
+                                          FROM friendship AS f        -- для сравнения.
                                           WHERE f.user_id = 2 
                                           AND f.status_id = 1); 
 ``` 
