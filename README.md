@@ -57,7 +57,7 @@ FROM user;
 ```sql
 SELECT *
 FROM user
-WHERE user.id IN (SELECT f.friend_id
+WHERE user.id IN (SELECT DISTINCT f.friend_id
                   FROM friendship AS f 
                   WHERE f.user_id = 1 AND f.status_id = 1);
                      -- f.user_id = 1 - это id пользователя, 
@@ -66,10 +66,14 @@ WHERE user.id IN (SELECT f.friend_id
                   
 7. **Получить список общих друзей у двух пользователей**
 ```sql 
-1. вернуть id друзей одного пользователя
-2. вернуть id друзей другого пользователя
-3. user_id1 IN user_id2
-
 SELECT *
-FROM user;
+FROM user AS us
+WHERE  us.user_id IN (SELECT f.friend_id
+                      FROM friendship AS f 
+                      WHERE f.user_id = 1 
+                      AND f.status_id = 1
+                      AND f.riend_id IN (SELECT DISTINCT f.friend_id
+                                         FROM friendship AS f 
+                                         WHERE f.user_id = 2 
+                                         AND f.status_id = 1); 
 ``` 
