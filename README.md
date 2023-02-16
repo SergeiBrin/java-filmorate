@@ -54,24 +54,11 @@ SELECT *
 FROM user;
 ```
 6. **Получить список друзей пользователя**
-```sql 
-SELECT *
-FROM user
-WHERE user.id IN (SELECT top.friend_id
-                  FROM(SELECT *
-                       FROM friendship AS fr
-                       LEFT JOIN user AS us ON us.user_id = fr.user_id) AS top
-                  WHERE top.user_id = 1 AND top.status_id = 1); 
-                     -- top.user_id = 1 - это id пользователя, 
-                     -- чей список друзей нужно вернуть
-```
-
 ```sql
 SELECT *
 FROM user
-WHERE user.id IN (SELECT fr.user_id
-                  FROM friendship AS f
-                  LEFT JOIN friendship AS fr ON f.user_id = fr.friend_id 
+WHERE user.id IN (SELECT f.friend_id
+                  FROM friendship AS f 
                   WHERE f.user_id = 1 AND f.status_id = 1);
                      -- f.user_id = 1 - это id пользователя, 
                      -- чей список друзей нужно вернуть.
