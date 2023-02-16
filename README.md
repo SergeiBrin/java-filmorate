@@ -68,12 +68,12 @@ WHERE user.id IN (SELECT DISTINCT f.friend_id
 ```sql 
 SELECT *
 FROM user AS us
-WHERE  us.user_id IN (SELECT f.friend_id
-                      FROM friendship AS f 
-                      WHERE f.user_id = 1 
-                      AND f.status_id = 1
-                      AND f.riend_id IN (SELECT DISTINCT f.friend_id
-                                         FROM friendship AS f 
-                                         WHERE f.user_id = 2 
-                                         AND f.status_id = 1); 
+WHERE  us.user_id IN (SELECT f.friend_id    -- берем id друзей первого пользователя и сравниваем их
+                      FROM friendship AS f  -- с id друзей второго пользователя через оператор IN.
+                      WHERE f.user_id = 1   -- Cовпадения пробрасываем дальше, где они сравниваются с id всех пользователей, 
+                      AND f.status_id = 1   -- и совпадения - то есть данные общих друзей выводятся на экран.
+                      AND f.friend_id IN (SELECT DISTINCT f.friend_id -- берем id друзей второго пользователя
+                                          FROM friendship AS f 
+                                          WHERE f.user_id = 2 
+                                          AND f.status_id = 1); 
 ``` 
