@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.validation.annotation;
+package ru.yandex.practicum.filmorate.validation.annotation.mpa;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -9,9 +9,9 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ReleaseDateValidator.class)
-public @interface FilmReleaseDateConstraint {
-    String message() default "Must be after 28.12.1895";
+@Constraint(validatedBy = FilmMpaValidator.class)
+public @interface FilmIdMpaConstraint {
+    String message() default "mpa_id must be 1 to 5";
 
     Class <?>[] groups() default {};
 

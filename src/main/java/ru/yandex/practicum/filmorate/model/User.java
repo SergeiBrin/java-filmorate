@@ -1,15 +1,17 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class User {
     private long id; // Может сделать Integer?
     private String name; // Может быть пустым
@@ -22,10 +24,10 @@ public class User {
     @Email
     private String email;
     @NotNull
-    private final Set<Long> friends = new HashSet<>();
+    private final Map<Long, Boolean> friends = new HashMap<>();
 
-    public boolean addFriend(Long friendId) {
-        return friends.add(friendId);
+    public void addFriend(Long friendId, Boolean status) {
+        friends.put(friendId, status);
     }
 
     public boolean deleteFriend(Long friendId) {

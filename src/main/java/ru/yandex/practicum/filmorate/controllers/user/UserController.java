@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.user.UserService;
+import ru.yandex.practicum.filmorate.service.user.UserDbService;
 import ru.yandex.practicum.filmorate.validation.validator.Validator;
 
 import javax.validation.Valid;
@@ -14,11 +14,11 @@ import java.util.List;
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
-    private final UserService userService;
-    private final Validator validator;
+    private final UserDbService userService;
+    private final Validator validator; // Выбирается по Primary
 
     @Autowired
-    public UserController(UserService userService, Validator validator) {
+    public UserController(UserDbService userService, Validator validator) {
         this.userService = userService;
         this.validator = validator;
     }
@@ -47,34 +47,36 @@ public class UserController {
         validator.checkUserByPathVariableId(userId);
         validator.checkUserByPathVariableId(friendId);
 
-        return userService.getListOfMutualFriends(userId, friendId);
+        return userService.getListOfCommonFriends(userId, friendId);
     }
 
     // создание пользователя
     @PostMapping
     public User postUser(@Valid @RequestBody User user) {
+        validator.checkForName(user);
         return userService.postUser(user);
     }
 
     // обновление пользователя
     @PutMapping
     public User putUser(@Valid @RequestBody User user) {
+        validator.checkForName(user);
         validator.checkIfUserExistsById(user);
         return userService.putUser(user);
     }
 
     @PutMapping("/{userId}/friends/{friendId}")
-    public User putFriendsToUser(@PathVariable Long userId,
-                                 @PathVariable Long friendId) {
+    public User addFriendToUser(@PathVariable Long userId,
+                                @PathVariable Long friendId) {
         validator.checkUserByPathVariableId(userId);
         validator.checkUserByPathVariableId(friendId);
 
-        return userService.putFriendsToUser(userId, friendId);
+        return userService.addFriendToUser(userId, friendId);
     }
 
     @DeleteMapping("/{userId}/friends/{friendId}")
     public User deleteFriendFromUser(@PathVariable Long userId,
-                                     @PathVariable Long friendId) {
+                                        @PathVariable Long friendId) {
         validator.checkUserByPathVariableId(userId);
         validator.checkUserByPathVariableId(friendId);
 

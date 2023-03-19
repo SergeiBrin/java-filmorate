@@ -5,9 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.exceptions.response.ErrorResponse;
 
 @RestControllerAdvice
@@ -40,6 +38,20 @@ public class ErrorHandler {
     public ErrorResponse handleFilmNotFoundException(final FilmNotFoundException e) {
         log.warn(e.getMessage());
         return new ErrorResponse("Ошибка при поиске фильма", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleMpaNotFoundException(final MpaNotFoundException e) {
+        log.warn(e.getMessage());
+        return new ErrorResponse("Ошибка при поиске Mpa", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleGenreNotFoundException(final GenreNotFoundException e) {
+        log.warn(e.getMessage());
+        return new ErrorResponse("Ошибка при поиске жанра фильма", e.getMessage());
     }
 
     @ExceptionHandler

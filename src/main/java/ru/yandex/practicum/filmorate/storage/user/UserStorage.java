@@ -9,4 +9,6 @@ public interface UserStorage {
     User getUserById(Long userId);
     User postUser(User user);
     User putUser(User user);
+    List<User> getUserFriendsList(Long userId);
+    List<User> getListOfCommonFriends(Long userId, Long friendId);
 }
