@@ -3,14 +3,10 @@ package ru.yandex.practicum.filmorate.service.film;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.FilmGenreDao;
-import ru.yandex.practicum.filmorate.dao.GenresDao;
-import ru.yandex.practicum.filmorate.dao.LikesDao;
-import ru.yandex.practicum.filmorate.dao.MpaDao;
+import ru.yandex.practicum.filmorate.dao.film.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.List;
 import java.util.Set;
@@ -20,13 +16,13 @@ import java.util.stream.Collectors;
 @Primary
 @Slf4j
 public class FilmDbService implements FilmService {
-    private final FilmStorage filmStorage;
+    private final FilmStorageDao filmStorage;
     private final MpaDao mpaDao;
     private final FilmGenreDao filmGenreDao;
     private final GenresDao genresDao;
     private final LikesDao likesDao;
 
-    public FilmDbService(FilmStorage filmStorage,
+    public FilmDbService(FilmStorageDao filmStorage,
                          MpaDao mpaDao,
                          FilmGenreDao filmGenreDao,
                          GenresDao genresDao,
@@ -62,9 +58,9 @@ public class FilmDbService implements FilmService {
         return genresDao.getGenreById(genreId);
     }
 
-    public Film postFilm(Film film) {
+    public Film createFilm(Film film) {
         // В методе post так же происходит отсылка в popular_films
-        Film createfilm = filmStorage.postFilm(film);
+        Film createfilm = filmStorage.createFilm(film);
 
         Set<Genre> genres = film.getGenres();
         if (genres != null) {
@@ -76,7 +72,7 @@ public class FilmDbService implements FilmService {
         return filmStorage.getFilmById(createfilm.getId());
     }
 
-    public Film putFilm(Film film) {
+    public Film updateFilm(Film film) {
         // Метод обнуляет жанры фильма.
         // Если жанров в запросе нет, то сразу ок.
         // Если они есть, то они обновятся в цикле.
@@ -89,25 +85,18 @@ public class FilmDbService implements FilmService {
             }
         }
 
-        return filmStorage.putFilm(film);
+        return filmStorage.updateFilm(film);
     }
 
     public Film likeTheFilm(Long filmId, Long userId) {
         likesDao.addLikeToFilm(filmId, userId);
-
-        Film film = filmStorage.getFilmById(filmId);
-        filmStorage.updatePopularFilms(film);
-
-        return film;
+        return filmStorage.getFilmById(filmId);
     }
 
     public Film deleteLikeForFilm(Long filmId, Long userId) {
         likesDao.deleteLikeForFilm(filmId, userId);
+        return filmStorage.getFilmById(filmId);
 
-        Film film = filmStorage.getFilmById(filmId);
-        filmStorage.updatePopularFilms(film);
-
-        return film;
     }
 
     public List<Mpa> getAllMpa() {

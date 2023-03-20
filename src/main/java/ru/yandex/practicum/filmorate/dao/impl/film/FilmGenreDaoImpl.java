@@ -1,10 +1,10 @@
-package ru.yandex.practicum.filmorate.dao.impl;
+package ru.yandex.practicum.filmorate.dao.impl.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dao.FilmGenreDao;
+import ru.yandex.practicum.filmorate.dao.film.FilmGenreDao;
 
 @Component
 @Slf4j

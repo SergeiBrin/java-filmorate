@@ -3,74 +3,65 @@ package ru.yandex.practicum.filmorate.validation.validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.dao.film.FilmStorageDao;
+import ru.yandex.practicum.filmorate.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.user.UserDbService;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import javax.validation.ValidationException;
 
 @Service
 @Slf4j
-public class RAMValidator implements Validator {
+public class InMemoryValidator implements Validator {
     private final UserDbService userService;
-    private final FilmStorage filmService;
+    private final FilmStorageDao filmService;
 
     @Autowired
-    public RAMValidator(UserDbService userService, FilmStorage filmService) {
+    public InMemoryValidator(UserDbService userService, FilmStorageDao filmService) {
         this.userService = userService;
         this.filmService = filmService;
     }
 
-    public void checkIfUserExistsById(User user) {
+    public void checkIfUserExists(User user) {
         if (user.getId() == 0) {
             throw new ValidationException("Id пользователя не передан на сервер");
         }
 
         if (userService.getUserById(user.getId()) == null) {
-            throw new UserNotFoundException(String.format("Пользователя с таким %d нет", user.getId()));
+            throw new EntityNotFoundException(String.format("Пользователя с таким %d нет", user.getId()));
         }
     }
 
-    public void checkUserByPathVariableId(Long userId) {
-        if (userId == null) {
-            throw new ValidationException("Id пользователя и/или друга не передан в PathVariable");
-        }
-
+    public void checkIfUserExistById(Long userId) {
         if (userService.getUserById(userId) == null) {
-            throw new UserNotFoundException(String.format("Пользователя с таким %d нет", userId));
+            throw new EntityNotFoundException(String.format("Пользователя с таким %d нет", userId));
         }
     }
 
-    public void checkIfFilmExistsById(Film film) {
+    public void checkIfFilmExists(Film film) {
         if (film.getId() == 0) {
             throw new ValidationException("Id фильма не передан на сервер");
         }
 
         if (filmService.getFilmById(film.getId()) == null) {
-            throw new FilmNotFoundException(String.format("Фильма с таким %d нет", film.getId()));
+            throw new EntityNotFoundException(String.format("Фильма с таким %d нет", film.getId()));
         }
     }
 
-    public void checkFilmByPathVariableId(Long filmId) {
-        if (filmId == null) {
-            throw new ValidationException("Id фильма не передан в PathVariable");
-        }
-
+    public void checkIfFilmExistById(Long filmId) {
         if (filmService.getFilmById(filmId) == null) {
-            throw new FilmNotFoundException(String.format("Фильма с таким %d нет", filmId));
+            throw new EntityNotFoundException(String.format("Фильма с таким %d нет", filmId));
         }
     }
 
     @Override
-    public void checkMpaByPathVariableId(Integer mpaId) {
+    public void checkIfMpaExistById(Integer mpaId) {
 
     }
 
     @Override
-    public void checkGenreByPathVariableId(Integer genreId) {
+    public void checkIfGenreExistById(Integer genreId) {
 
     }
 

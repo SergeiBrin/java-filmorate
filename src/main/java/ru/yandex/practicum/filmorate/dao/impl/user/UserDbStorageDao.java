@@ -1,10 +1,11 @@
-package ru.yandex.practicum.filmorate.storage.user;
+package ru.yandex.practicum.filmorate.dao.impl.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dao.FriendshipDao;
+import ru.yandex.practicum.filmorate.dao.film.FriendshipDao;
+import ru.yandex.practicum.filmorate.dao.user.UserStorageDao;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -15,11 +16,11 @@ import java.util.List;
 @Component
 @Primary
 @Slf4j
-public class UserDbStorage implements UserStorage {
+public class UserDbStorageDao implements UserStorageDao {
     private final JdbcTemplate jdbcTemplate;
     private final FriendshipDao friendshipDao;
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate, FriendshipDao friendshipDao) {
+    public UserDbStorageDao(JdbcTemplate jdbcTemplate, FriendshipDao friendshipDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.friendshipDao = friendshipDao;
     }
@@ -79,7 +80,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User postUser(User user) {
+    public User createUser(User user) {
         String sqlQuery = "insert into users (name, login, birthday, email) values (?, ?, ?, ?)";
 
         jdbcTemplate.update(sqlQuery,
@@ -95,7 +96,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User putUser(User user) {
+    public User updateUser(User user) {
         String sqlQuery = "update users set name = ?, login = ?, birthday = ?, email = ? where user_id = ?";
 
         jdbcTemplate.update(sqlQuery, // А что, если такого id в табице нет?

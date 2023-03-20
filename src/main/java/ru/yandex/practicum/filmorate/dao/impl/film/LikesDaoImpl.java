@@ -1,10 +1,10 @@
-package ru.yandex.practicum.filmorate.dao.impl;
+package ru.yandex.practicum.filmorate.dao.impl.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dao.LikesDao;
+import ru.yandex.practicum.filmorate.dao.film.LikesDao;
 import ru.yandex.practicum.filmorate.model.Likes;
 
 import java.sql.ResultSet;
@@ -29,8 +29,8 @@ public class LikesDaoImpl implements LikesDao {
 
         if (isAddLike) {
             log.info("В таблицу likes добавлена связь между фильмом с id {} и пользователем с id {}", filmId, userId);
-
         }
+
         return isAddLike;
     }
 

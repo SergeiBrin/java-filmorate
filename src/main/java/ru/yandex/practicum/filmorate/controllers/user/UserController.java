@@ -31,54 +31,54 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public User getUserById(@PathVariable Long userId) {
-        validator.checkUserByPathVariableId(userId);
+        validator.checkIfUserExistById(userId);
         return userService.getUserById(userId);
     }
 
     @GetMapping("{userId}/friends")
     public List<User> getUserFriendsList(@PathVariable Long userId) {
-        validator.checkUserByPathVariableId(userId);
+        validator.checkIfUserExistById(userId);
         return userService.getUserFriendsList(userId);
     }
 
     @GetMapping("/{userId}/friends/common/{friendId}")
     public List<User> getListOfMutualFriends(@PathVariable Long userId,
                                              @PathVariable Long friendId) {
-        validator.checkUserByPathVariableId(userId);
-        validator.checkUserByPathVariableId(friendId);
+        validator.checkIfUserExistById(userId);
+        validator.checkIfUserExistById(friendId);
 
         return userService.getListOfCommonFriends(userId, friendId);
     }
 
     // создание пользователя
     @PostMapping
-    public User postUser(@Valid @RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {
         validator.checkForName(user);
-        return userService.postUser(user);
+        return userService.createUser(user);
     }
 
     // обновление пользователя
     @PutMapping
-    public User putUser(@Valid @RequestBody User user) {
+    public User updateUser(@Valid @RequestBody User user) {
         validator.checkForName(user);
-        validator.checkIfUserExistsById(user);
-        return userService.putUser(user);
+        validator.checkIfUserExists(user);
+        return userService.updateUser(user);
     }
 
     @PutMapping("/{userId}/friends/{friendId}")
     public User addFriendToUser(@PathVariable Long userId,
                                 @PathVariable Long friendId) {
-        validator.checkUserByPathVariableId(userId);
-        validator.checkUserByPathVariableId(friendId);
+        validator.checkIfUserExistById(userId);
+        validator.checkIfUserExistById(friendId);
 
         return userService.addFriendToUser(userId, friendId);
     }
 
     @DeleteMapping("/{userId}/friends/{friendId}")
     public User deleteFriendFromUser(@PathVariable Long userId,
-                                        @PathVariable Long friendId) {
-        validator.checkUserByPathVariableId(userId);
-        validator.checkUserByPathVariableId(friendId);
+                                     @PathVariable Long friendId) {
+        validator.checkIfUserExistById(userId);
+        validator.checkIfUserExistById(friendId);
 
         return userService.deleteFriendFromUser(userId, friendId);
     }

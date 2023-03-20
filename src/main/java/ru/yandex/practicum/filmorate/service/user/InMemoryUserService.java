@@ -2,19 +2,19 @@ package ru.yandex.practicum.filmorate.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.user.UserStorageDao;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 @Service
-public class UserRamService implements UserService {
-    private final UserStorage userStorage;
+public class InMemoryUserService implements UserService {
+    private final UserStorageDao userStorage;
 
     @Autowired
-    public UserRamService(UserStorage userStorage) {
+    public InMemoryUserService(UserStorageDao userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -58,12 +58,12 @@ public class UserRamService implements UserService {
         return friends;
     }
 
-    public User postUser(User user) {
-        return userStorage.postUser(user);
+    public User createUser(User user) {
+        return userStorage.createUser(user);
     }
 
-    public User putUser(User user) {
-        return userStorage.putUser(user);
+    public User updateUser(User user) {
+        return userStorage.updateUser(user);
     }
 
     public User addFriendToUser(Long userId, Long friendId) {

@@ -6,12 +6,12 @@ import ru.yandex.practicum.filmorate.model.User;
 
 @Service
 public interface Validator {
-    void checkIfUserExistsById(User user);
-    void checkUserByPathVariableId(Long userId);
-    void checkIfFilmExistsById(Film film);
-    void checkFilmByPathVariableId(Long filmId);
+    void checkIfUserExists(User user);
+    void checkIfUserExistById(Long userId);
+    void checkIfFilmExists(Film film);
+    void checkIfFilmExistById(Long filmId);
     User checkForName(User user);
-    void checkMpaByPathVariableId(Integer mpaId);
-    void checkGenreByPathVariableId(Integer genreId);
+    void checkIfMpaExistById(Integer mpaId);
+    void checkIfGenreExistById(Integer genreId);
 
 }

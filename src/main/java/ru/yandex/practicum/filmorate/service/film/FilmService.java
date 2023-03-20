@@ -12,8 +12,8 @@ public interface FilmService {
     List<Film> getMostPopularFilm(Long count);
     List<Genre> getAllGenres();
     Genre getGenreById(Integer genreId);
-    Film postFilm(Film film);
-    Film putFilm(Film film);
+    Film createFilm(Film film);
+    Film updateFilm(Film film);
     Film likeTheFilm(Long filmId, Long userId);
     Film deleteLikeForFilm(Long filmId, Long userId);
     List<Mpa> getAllMpa();

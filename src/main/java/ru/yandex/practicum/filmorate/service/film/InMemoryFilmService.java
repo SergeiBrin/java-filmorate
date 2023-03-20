@@ -2,20 +2,20 @@ package ru.yandex.practicum.filmorate.service.film;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.film.FilmStorageDao;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FilmRamService implements FilmService{
-    private final FilmStorage filmStorage;
+public class InMemoryFilmService implements FilmService{
+    private final FilmStorageDao filmStorage;
 
     @Autowired
-    public FilmRamService(FilmStorage filmStorage) {
+    public InMemoryFilmService(FilmStorageDao filmStorage) {
         this.filmStorage = filmStorage;
     }
 
@@ -34,18 +34,18 @@ public class FilmRamService implements FilmService{
                 .collect(Collectors.toList());
     }
 
-    public Film postFilm(Film film) {
-        return filmStorage.postFilm(film);
+    public Film createFilm(Film film) {
+        return filmStorage.createFilm(film);
     }
 
-    public Film putFilm(Film film) {
-        return filmStorage.putFilm(film);
+    public Film updateFilm(Film film) {
+        return filmStorage.updateFilm(film);
     }
 
     public Film deleteLikeForFilm(Long filmId, Long userId) {
         Film film = filmStorage.getFilmById(filmId);
         film.deleteLike(userId);
-        filmStorage.updatePopularFilms(film);
+        filmStorage.updateFilm(film);
 
         return film;
     }
@@ -53,7 +53,7 @@ public class FilmRamService implements FilmService{
     public Film likeTheFilm(Long filmId, Long userId) {
         Film film = filmStorage.getFilmById(filmId);
         film.addLike(userId);
-        filmStorage.updatePopularFilms(film);
+        filmStorage.updateFilm(film);
 
         return film;
     }

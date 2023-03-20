@@ -1,13 +1,13 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.dao.impl.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dao.GenresDao;
-import ru.yandex.practicum.filmorate.dao.LikesDao;
-import ru.yandex.practicum.filmorate.dao.MpaDao;
-import ru.yandex.practicum.filmorate.dao.PopularFilmsDao;
+import ru.yandex.practicum.filmorate.dao.film.FilmStorageDao;
+import ru.yandex.practicum.filmorate.dao.film.GenresDao;
+import ru.yandex.practicum.filmorate.dao.film.LikesDao;
+import ru.yandex.practicum.filmorate.dao.film.MpaDao;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Likes;
 
@@ -20,23 +20,20 @@ import java.util.Set;
 @Component
 @Slf4j
 @Primary
-public class FilmDbStorage implements FilmStorage {
+public class FilmDbStorageDao implements FilmStorageDao {
     private final JdbcTemplate jdbcTemplate;
     private final MpaDao mpaDao;
     private final GenresDao genresDao;
     private final LikesDao likesDao;
-    private final PopularFilmsDao popularFilmsDao;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate,
-                         MpaDao mpaDao,
-                         GenresDao genresDao,
-                         LikesDao likesDao,
-                         PopularFilmsDao popularFilmsDao) {
+    public FilmDbStorageDao(JdbcTemplate jdbcTemplate,
+                            MpaDao mpaDao,
+                            GenresDao genresDao,
+                            LikesDao likesDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.mpaDao = mpaDao;
         this.genresDao = genresDao;
         this.likesDao = likesDao;
-        this.popularFilmsDao = popularFilmsDao;
     }
 
     @Override
@@ -64,21 +61,15 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Set<Film> getPopularFilms() {
-          // Альтернативный способ поиска популярных фильмов.
-          // Сортировка идет с помощью таблиц films и likes ↓ ↓ ↓
+        // Альтернативный способ поиска популярных фильмов.
+        // Сортировка идет с помощью таблиц films и likes ↓ ↓ ↓
 
-          /*
-          /  String sqlQuery = "select f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
-          /                    "from films as f " +
-          /                    "left outer join likes as l on f.film_id = l.film_id " +
-          /                    "group by f.film_id " +
-          /                    "order by count(user_id) desc";
-          */
 
         String sqlQuery = "select f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
                           "from films as f " +
-                          "inner join popular_films as pf on f.film_id = pf.film_id " +
-                          "order by pf.likes_count desc";
+                          "left outer join likes as l on f.film_id = l.film_id " +
+                          "group by f.film_id " +
+                          "order by count(user_id) desc";
 
         Set<Film> popularFilms = new HashSet<>(jdbcTemplate.query(sqlQuery, this::mapRowToFilm));
         log.info("Cписок популярных фильмов {} отправлен клиенту", popularFilms);
@@ -87,7 +78,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film postFilm(Film film) {
+    public Film createFilm(Film film) {
         String sqlQuery = "insert into films (name, description, release_date, duration, mpa_id) values (?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sqlQuery,
@@ -101,14 +92,11 @@ public class FilmDbStorage implements FilmStorage {
         Film newFilm = findLastFilm();
         log.info("Фильм {} добавлен в таблицу films", newFilm);
 
-        popularFilmsDao.addFilmInPopularList(newFilm.getId());
-        log.info("Фильм {} добавлен в таблицу popular_films", newFilm);
-
         return newFilm;
     }
 
     @Override
-    public Film putFilm(Film film) {
+    public Film updateFilm(Film film) {
         String sqlQuery = "update films set name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ? " +
                           "where film_id = ?";
 
@@ -124,14 +112,6 @@ public class FilmDbStorage implements FilmStorage {
         log.info("Фильм {} обновлен в таблице films", updateFilm);
 
         return updateFilm;
-    }
-
-    @Override
-    public void updatePopularFilms(Film film) {
-        Long likesCount = (long) likesDao.getLikesForFilm(film.getId()).size();
-
-        popularFilmsDao.updateFilmInPopularList(film.getId(), likesCount);
-        log.info("Для фильма {} обновлено количество лайков {} в таблице popular_films", film, likesCount);
     }
 
     private Film findLastFilm() {

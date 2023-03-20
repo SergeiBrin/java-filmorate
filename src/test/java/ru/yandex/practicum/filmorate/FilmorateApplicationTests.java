@@ -7,12 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.yandex.practicum.filmorate.dao.*;
-import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.dao.film.*;
+import ru.yandex.practicum.filmorate.exceptions.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
+import ru.yandex.practicum.filmorate.dao.impl.film.FilmDbStorageDao;
+import ru.yandex.practicum.filmorate.dao.impl.user.UserDbStorageDao;
 import ru.yandex.practicum.filmorate.validation.validator.DataBaseValidator;
 
 import java.time.LocalDate;
@@ -28,10 +27,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class FilmorateApplicationTests {
 	private final DataBaseValidator validator;
-	private final UserDbStorage userStorage;
+	private final UserDbStorageDao userStorage;
 	private final FriendshipDao friendshipDao;
-	private final FilmDbStorage filmStorage;
-	private final PopularFilmsDao popularFilmsDao;
+	private final FilmDbStorageDao filmStorage;
 	private final GenresDao genresDao;
 	private final FilmGenreDao filmGenreDao;
 	private final MpaDao mpaDao;
@@ -60,16 +58,16 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void exceptionShouldBeThrownIfThereIsNoUserWithThisId() {
-		final UserNotFoundException exception = assertThrows(
-				UserNotFoundException.class,
-				() -> validator.checkUserByPathVariableId(1L));
+		final EntityNotFoundException exception = assertThrows(
+				EntityNotFoundException.class,
+				() -> validator.checkIfUserExistById(1L));
 
 		assertEquals("Пользователя с таким id: 1 нет", exception.getMessage());
 	}
 
 	@Test
 	public void userMustBeAddedToDatabase() {
-		User postUser = userStorage.postUser(user);
+		User postUser = userStorage.createUser(user);
 		user.setId(1);
 
 		assertEquals(user, postUser);
@@ -77,22 +75,22 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void userMustBeUpdateToDatabase() {
-		userStorage.postUser(user);
+		userStorage.createUser(user);
 
 		user.setId(1);
 		user.setLogin("New Login");
 		user.setEmail("newmail@gmail.com");
 
-		User updateUser = userStorage.putUser(user);
+		User updateUser = userStorage.updateUser(user);
 
 		assertEquals(user, updateUser);
 	}
 
 	@Test
 	public void shouldReturnListOfUsers() {
-		User userOne = userStorage.postUser(user);
-		User userTwo = userStorage.postUser(user);
-		User userThree = userStorage.postUser(user);
+		User userOne = userStorage.createUser(user);
+		User userTwo = userStorage.createUser(user);
+		User userThree = userStorage.createUser(user);
 
 		List<User> postUsers = List.of(userOne, userTwo, userThree);
 		List<User> getAllUsers = userStorage.getAllUsers();
@@ -102,7 +100,7 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void userMustReturnById() {
-		User postUser = userStorage.postUser(user);
+		User postUser = userStorage.createUser(user);
 		user.setId(1);
 
 		User getUserById = userStorage.getUserById(postUser.getId());
@@ -112,7 +110,7 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void userMustNotHaveFriends() {
-		userStorage.postUser(user);
+		userStorage.createUser(user);
 		List<User> friends = userStorage.getUserFriendsList(1L);
 
 		assertTrue(friends.isEmpty());
@@ -120,9 +118,9 @@ class FilmorateApplicationTests {
 
     @Test
 	public void userMustHaveTwoFriends() {
-		User userOne = userStorage.postUser(user);
-		User userTwo = userStorage.postUser(user);
-		User userThree = userStorage.postUser(user);
+		User userOne = userStorage.createUser(user);
+		User userTwo = userStorage.createUser(user);
+		User userThree = userStorage.createUser(user);
 
 		// При добавлении юзеру друга (true), самому другу присваивается
 		// как бы предложение дружбы от юзера.
@@ -140,9 +138,9 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void twoUsersMustNotHaveCommonFriends() {
-         User userOne = userStorage.postUser(user);
-		 User userTwo = userStorage.postUser(user);
-		 User userThree = userStorage.postUser(user);
+         User userOne = userStorage.createUser(user);
+		 User userTwo = userStorage.createUser(user);
+		 User userThree = userStorage.createUser(user);
 
 		 friendshipDao.addFriendToUser(userOne.getId(), userTwo.getId());
 		 friendshipDao.addFriendToUser(userTwo.getId(), userThree.getId());
@@ -154,9 +152,9 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void twoUsersMustNotHaveCommonFriendIfStatusIsFalse() {
-		User userOne = userStorage.postUser(user);
-		User userTwo = userStorage.postUser(user);
-		User userThree = userStorage.postUser(user);
+		User userOne = userStorage.createUser(user);
+		User userTwo = userStorage.createUser(user);
+		User userThree = userStorage.createUser(user);
 
 		friendshipDao.addFriendToUser(userOne.getId(), userThree.getId());
 		friendshipDao.addFriendToUser(userTwo.getId(), userThree.getId());
@@ -170,9 +168,9 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void twoUsersMustHaveCommonFriend() {
-		User userOne = userStorage.postUser(user);
-		User userTwo = userStorage.postUser(user);
-		User userThree = userStorage.postUser(user);
+		User userOne = userStorage.createUser(user);
+		User userTwo = userStorage.createUser(user);
+		User userThree = userStorage.createUser(user);
 
 		friendshipDao.addFriendToUser(userOne.getId(), userThree.getId());
 		friendshipDao.addFriendToUser(userTwo.getId(), userThree.getId());
@@ -185,8 +183,8 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void userMustNotHaveFriendIfDeleted() {
-		User userOne = userStorage.postUser(user);
-		User userTwo = userStorage.postUser(user);
+		User userOne = userStorage.createUser(user);
+		User userTwo = userStorage.createUser(user);
 
 		friendshipDao.addFriendToUser(userOne.getId(), userTwo.getId());
 		friendshipDao.deleteFriendFromUser(userOne.getId(), userTwo.getId());
@@ -198,16 +196,16 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void exceptionShouldBeThrownIfThereIsNoFilmWithThisId() {
-		final FilmNotFoundException exception = assertThrows(
-				FilmNotFoundException.class,
-				() -> validator.checkFilmByPathVariableId(1L));
+		final EntityNotFoundException exception = assertThrows(
+				EntityNotFoundException.class,
+				() -> validator.checkIfFilmExistById(1L));
 
 		assertEquals("Фильма с таким id: 1 нет", exception.getMessage());
 	}
 
 	@Test
 	public void filmMustBeAddedToDatabase() {
-		Film postFilm = filmStorage.postFilm(film);
+		Film postFilm = filmStorage.createFilm(film);
 		filmGenreDao.addFilmGenre(1, postFilm.getId());
 		filmGenreDao.addFilmGenre(2, postFilm.getId());
 
@@ -218,7 +216,7 @@ class FilmorateApplicationTests {
 	}
 	@Test
 	public void filmMustBeUpdateToDatabase() {
-		Film postFilm = filmStorage.postFilm(film);
+		Film postFilm = filmStorage.createFilm(film);
 		filmGenreDao.addFilmGenre(1, postFilm.getId());
 		filmGenreDao.addFilmGenre(2, postFilm.getId());
 
@@ -226,7 +224,7 @@ class FilmorateApplicationTests {
 		film.setMpa(new Mpa(2, "PG"));
 		film.addGenre(Set.of(new Genre(1, "Комедия"), new Genre(2, "Драма"), new Genre(3, "Мультфильм")));
 
-		filmStorage.putFilm(film);
+		filmStorage.updateFilm(film);
 		filmGenreDao.addFilmGenre(3, postFilm.getId());
 
 		Film updateFilm = filmStorage.getFilmById(postFilm.getId());
@@ -236,8 +234,8 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void shouldReturnListOfFilms() {
-		Film filmOne = filmStorage.postFilm(film);
-		Film filmTwo = filmStorage.postFilm(film);
+		Film filmOne = filmStorage.createFilm(film);
+		Film filmTwo = filmStorage.createFilm(film);
 
 		filmGenreDao.addFilmGenre(1, filmOne.getId());
 		filmGenreDao.addFilmGenre(2, filmOne.getId());
@@ -255,7 +253,7 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void filmMustReturnById() {
-		Film filmOne = filmStorage.postFilm(film);
+		Film filmOne = filmStorage.createFilm(film);
 		filmGenreDao.addFilmGenre(1, filmOne.getId());
 		filmGenreDao.addFilmGenre(2, filmOne.getId());
 
@@ -268,8 +266,8 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void listOfPopularFilmsShouldReturn() {
-		Film filmOne = filmStorage.postFilm(film);
-		Film filmTwo = filmStorage.postFilm(film);
+		Film filmOne = filmStorage.createFilm(film);
+		Film filmTwo = filmStorage.createFilm(film);
 
 		filmGenreDao.addFilmGenre(1, filmOne.getId());
 		filmGenreDao.addFilmGenre(2, filmOne.getId());
@@ -288,12 +286,11 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void numberOfLikesForFilmNeedsToBeUpdated() {
-		Film filmOne = filmStorage.postFilm(film);
-		User userOne = userStorage.postUser(user);
+		Film filmOne = filmStorage.createFilm(film);
+		User userOne = userStorage.createUser(user);
 
 		likesDao.addLikeToFilm(filmOne.getId(), userOne.getId());
 
-		filmStorage.updatePopularFilms(filmOne);
 		Film updateFilm = filmStorage.getFilmById(filmOne.getId());
 
 		assertEquals(1, updateFilm.getLikes().size());
@@ -301,8 +298,8 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void filmShouldGetLike() {
-		Film filmOne = filmStorage.postFilm(film);
-		User userOne = userStorage.postUser(user);
+		Film filmOne = filmStorage.createFilm(film);
+		User userOne = userStorage.createUser(user);
 
 		likesDao.addLikeToFilm(filmOne.getId(), userOne.getId());
 
@@ -314,8 +311,8 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void filmShouldHaveLike() {
-		Film filmOne = filmStorage.postFilm(film);
-		User userOne = userStorage.postUser(user);
+		Film filmOne = filmStorage.createFilm(film);
+		User userOne = userStorage.createUser(user);
 
 		likesDao.addLikeToFilm(filmOne.getId(), userOne.getId());
 
@@ -332,23 +329,10 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void filmShouldBeAddedToThePopularList() {
-		Film filmOne = filmStorage.postFilm(film);
+		Film filmOne = filmStorage.createFilm(film);
 		Set<Film> popularFilms = filmStorage.getPopularFilms();
 
 		assertEquals(1, popularFilms.size());
-	}
-
-    @Test
-	public void likesCountOfFilmShouldBeUpdatedInThePopularList() {
-		Film filmOne = filmStorage.postFilm(film);
-		Long likesCount = popularFilmsDao.getLikesCountForFilm(filmOne.getId());
-
-		assertEquals(0, likesCount);
-
-		popularFilmsDao.updateFilmInPopularList(filmOne.getId(), 2L);
-		likesCount = popularFilmsDao.getLikesCountForFilm(filmOne.getId());
-
-		assertEquals(2, likesCount);
 	}
 
 	@Test
@@ -396,7 +380,7 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void filmGenreShouldComeBack() {
-		Film filmOne = filmStorage.postFilm(film);
+		Film filmOne = filmStorage.createFilm(film);
 		Set<Genre> expectedGenres = Set.of(new Genre(1, "Комедия"), new Genre(2, "Драма"));
 
 		filmGenreDao.addFilmGenre(1, filmOne.getId());
@@ -409,7 +393,7 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void filmGenresShouldBeDeleted() {
-		Film filmOne = filmStorage.postFilm(film);
+		Film filmOne = filmStorage.createFilm(film);
 		filmGenreDao.addFilmGenre(1, filmOne.getId());
 		filmGenreDao.addFilmGenre(2, filmOne.getId());
 
@@ -418,7 +402,6 @@ class FilmorateApplicationTests {
 
 		assertTrue(actualGenres.isEmpty());
 	}
-
 
 	@Test
 	void contextLoads() {
