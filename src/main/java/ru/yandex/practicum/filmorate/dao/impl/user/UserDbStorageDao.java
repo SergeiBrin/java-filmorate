@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.film.FriendshipDao;
 import ru.yandex.practicum.filmorate.dao.user.UserStorageDao;
-import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
@@ -132,13 +131,6 @@ public class UserDbStorageDao implements UserStorageDao {
                 .birthday(resultSet.getDate("birthday").toLocalDate())
                 .email(resultSet.getString("email"))
                 .build();
-
-        // Перед отправкой клиенту объект User, добавляю ему его друзей - для наглядности.
-        List<Friendship> friendships = friendshipDao.getFriendsToUser(user.getId());
-
-        for (Friendship friendship : friendships) {
-            user.addFriend(friendship.getFriendId(), friendship.getStatus());
-        }
 
         return user;
     }

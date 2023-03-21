@@ -36,14 +36,6 @@ public class Film {
     @NotNull
     private final Set<Long> likes = new HashSet<>();
 
-    // Если добавлять через add(genre), то выбрасывается ошибка
-    // UnsupportedOperationException. Решение нашел здесь
-    // https://www.baeldung.com/java-list-unsupported-operation-exception
-    public boolean addGenre(Set<Genre> genre) {
-        genres = new HashSet<>(genre);
-        return true;
-    }
-
     public boolean addLike(Long userId) {
         return likes.add(userId);
     }

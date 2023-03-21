@@ -5,12 +5,10 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.user.UserStorageDao;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
-public class InMemoryUserService implements UserService {
+public abstract class InMemoryUserService implements UserService {
     private final UserStorageDao userStorage;
 
     @Autowired
@@ -26,38 +24,6 @@ public class InMemoryUserService implements UserService {
         return userStorage.getUserById(userId);
     }
 
-    // Здесь нужна доработка. Ведь теперь есть ещё true и false
-    public List<User> getUserFriendsList(Long userId) {
-        List<User> friends = new ArrayList<>();
-        User user = userStorage.getUserById(userId);
-        Set<Long> friendId = user.getFriends().keySet();
-
-        for (Long id : friendId) {
-            friends.add(userStorage.getUserById(id));
-        }
-
-        return friends;
-    }
-
-    // Здесь можно доработать до true и false
-    public List<User> getListOfCommonFriends(Long userId, Long friendId) {
-        List<User> friends = new ArrayList<>();
-
-        User user = userStorage.getUserById(userId);
-        User friend = userStorage.getUserById(friendId);
-
-        Set<Long> usersId = user.getFriends().keySet();
-        Set<Long> friendsId = friend.getFriends().keySet();
-
-        for (Long id : usersId) {
-            if (friendsId.contains(id)) {
-                friends.add(userStorage.getUserById(id));
-            }
-        }
-
-        return friends;
-    }
-
     public User createUser(User user) {
         return userStorage.createUser(user);
     }
@@ -65,6 +31,12 @@ public class InMemoryUserService implements UserService {
     public User updateUser(User user) {
         return userStorage.updateUser(user);
     }
+}
+
+    /*
+    !!! При включении этих методов для InMemoryUserStorage, нужно создать
+        в классе User поле: Set<Long> friends = new HashSet<>();
+        и сделать класс InMemoryUserService неабстрактным.
 
     public User addFriendToUser(Long userId, Long friendId) {
         User user = userStorage.getUserById(userId);
@@ -85,4 +57,37 @@ public class InMemoryUserService implements UserService {
 
         return user;
     }
-}
+
+
+    // Здесь нужна доработка. Ведь теперь есть ещё true и false
+    public List<User> getUserFriendsList(Long userId) {
+        List<User> friends = new ArrayList<>();
+        User user = userStorage.getUserById(userId);
+        Set<Long> friendId = user.getFriends();
+
+        for (Long id : friendId) {
+            friends.add(userStorage.getUserById(id));
+        }
+
+        return friends;
+    }
+
+    // Здесь можно доработать до true и false
+    public List<User> getListOfCommonFriends(Long userId, Long friendId) {
+        List<User> friends = new ArrayList<>();
+
+        User user = userStorage.getUserById(userId);
+        User friend = userStorage.getUserById(friendId);
+
+        Set<Long> usersId = user.getFriends();
+        Set<Long> friendsId = friend.getFriends();
+
+        for (Long id : usersId) {
+            if (friendsId.contains(id)) {
+                friends.add(userStorage.getUserById(id));
+            }
+        }
+
+        return friends;
+    }
+    */

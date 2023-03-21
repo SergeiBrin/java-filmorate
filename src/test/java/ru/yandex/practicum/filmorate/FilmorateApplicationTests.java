@@ -222,7 +222,7 @@ class FilmorateApplicationTests {
 
 		film.setId(1);
 		film.setMpa(new Mpa(2, "PG"));
-		film.addGenre(Set.of(new Genre(1, "Комедия"), new Genre(2, "Драма"), new Genre(3, "Мультфильм")));
+		film.setGenres(Set.of(new Genre(1, "Комедия"), new Genre(2, "Драма"), new Genre(3, "Мультфильм")));
 
 		filmStorage.updateFilm(film);
 		filmGenreDao.addFilmGenre(3, postFilm.getId());
@@ -242,8 +242,8 @@ class FilmorateApplicationTests {
 		filmGenreDao.addFilmGenre(1, filmTwo.getId());
 		filmGenreDao.addFilmGenre(2, filmTwo.getId());
 
-		filmOne.addGenre(Set.of(new Genre(1, "Комедия"), new Genre(2, "Драма")));
-		filmTwo.addGenre(Set.of(new Genre(1, "Комедия"), new Genre(2, "Драма")));
+		filmOne.setGenres(Set.of(new Genre(1, "Комедия"), new Genre(2, "Драма")));
+		filmTwo.setGenres(Set.of(new Genre(1, "Комедия"), new Genre(2, "Драма")));
 
 		List<Film> postFilms = List.of(filmOne, filmTwo);
 		List<Film> getAllFilms = filmStorage.getAllFilms();
@@ -274,8 +274,8 @@ class FilmorateApplicationTests {
 		filmGenreDao.addFilmGenre(1, filmTwo.getId());
 		filmGenreDao.addFilmGenre(2, filmTwo.getId());
 
-		filmOne.addGenre(Set.of(new Genre(1, "Комедия"), new Genre(2, "Драма")));
-		filmTwo.addGenre(Set.of(new Genre(1, "Комедия"), new Genre(2, "Драма")));
+		filmOne.setGenres(Set.of(new Genre(1, "Комедия"), new Genre(2, "Драма")));
+		filmTwo.setGenres(Set.of(new Genre(1, "Комедия"), new Genre(2, "Драма")));
 
 		// Добавляю наоборот, так как в методе сортировка по лайкам DESC.
 		List<Film> postFilms = List.of(filmTwo, filmOne);

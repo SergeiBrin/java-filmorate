@@ -114,12 +114,12 @@ class FilmControllerValidationTest {
 
     @Test
     public void filmMustNotBeValidatedIfGenreIdIsLessThan1OrGreaterThan6() {
-        film.addGenre(Set.of(new Genre(0, "Драма")));
+        film.setGenres(Set.of(new Genre(0, "Драма")));
         violations = validator.validate(film);
 
         assertEquals(1, violations.size());
 
-        film.addGenre(Set.of(new Genre(7, "Драма")));
+        film.setGenres(Set.of(new Genre(7, "Драма")));
         violations = validator.validate(film);
 
         assertEquals(1, violations.size());
@@ -127,12 +127,12 @@ class FilmControllerValidationTest {
 
     @Test
     public void filmMustBeValidatedIfGenreIdIsBetween1And6() {
-        film.addGenre(Set.of(new Genre(1, "Драма")));
+        film.setGenres(Set.of(new Genre(1, "Драма")));
         violations = validator.validate(film);
 
         assertEquals(0, violations.size());
 
-        film.addGenre(Set.of(new Genre(6, "Драма")));
+        film.setGenres(Set.of(new Genre(6, "Драма")));
         violations = validator.validate(film);
 
         assertEquals(0, violations.size());

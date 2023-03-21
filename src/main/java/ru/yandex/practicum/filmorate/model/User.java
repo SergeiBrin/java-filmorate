@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -23,14 +24,4 @@ public class User {
     @NotBlank
     @Email
     private String email;
-    @NotNull
-    private final Map<Long, Boolean> friends = new HashMap<>();
-
-    public void addFriend(Long friendId, Boolean status) {
-        friends.put(friendId, status);
-    }
-
-    public boolean deleteFriend(Long friendId) {
-        return friends.remove(friendId);
-    }
 }
