@@ -1,7 +1,8 @@
-package ru.yandex.practicum.filmorate.storage.user;
+package ru.yandex.practicum.filmorate.dao.impl.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dao.user.UserStorageDao;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
@@ -11,8 +12,8 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class InMemoryUserStorage implements UserStorage {
-    private int id;
+public class InMemoryUserStorageDao implements UserStorageDao {
+    private long id;
     private final Map<Long, User> users = new HashMap<>();
 
     @Override
@@ -27,10 +28,8 @@ public class InMemoryUserStorage implements UserStorage {
         return users.get(userId);
     }
 
-
     @Override
-    public User postUser(User user) {
-        checkName(user);
+    public User createUser(User user) {
         user.setId(++id);
 
         users.put(user.getId(), user);
@@ -40,9 +39,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User putUser(User user) {
-        checkName(user);
-
+    public User updateUser(User user) {
         // Если все проверки пройдены, то объект user обновляется.
         users.put(user.getId(), user);
         log.info("Пользователь обновлен {}", user);
@@ -50,12 +47,13 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    // Если имя пустое, то login становится именем.
-    private void checkName(User user) {
-        boolean isNameCorrect = (user.getName() != null) && (!user.getName().isEmpty());
+    @Override
+    public List<User> getUserFriendsList(Long userId) {
+        return null;
+    }
 
-        if (!isNameCorrect) {
-            user.setName(user.getLogin());
-        }
+    @Override
+    public List<User> getListOfCommonFriends(Long userId, Long friendId) {
+        return null;
     }
 }

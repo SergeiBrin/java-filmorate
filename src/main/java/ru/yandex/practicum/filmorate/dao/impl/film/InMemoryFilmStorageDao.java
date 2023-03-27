@@ -1,8 +1,9 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.dao.impl.film;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dao.film.FilmStorageDao;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.*;
@@ -10,7 +11,7 @@ import java.util.*;
 @Component
 @Slf4j
 @Getter
-public class InMemoryFilmStorage implements FilmStorage {
+public class InMemoryFilmStorageDao implements FilmStorageDao {
     private int id;
     private final Map<Long, Film> films = new HashMap<>();
     private final Set<Film> popularFilms = new TreeSet<>(createComparator());
@@ -43,7 +44,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film postFilm(Film film) {
+    public Film createFilm(Film film) {
         film.setId(++id);
 
         films.put(film.getId(), film);
@@ -57,7 +58,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film putFilm(Film film) {
+    public Film updateFilm(Film film) {
         films.put(film.getId(), film);
         log.info("Фильм {} обновлён в общем списке", film);
 
@@ -66,8 +67,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return film;
     }
 
-    @Override
-    public void updatePopularFilms(Film film) {
+    private void updatePopularFilms(Film film) {
         // Сначала удаляю фильм из множества, а потом добавляю его снова - для сортировки.
         // Как добавить обновленный фильм в сортировку, с одновременным удалением его старой версии я понять не могу.
         if (!popularFilms.isEmpty()) {

@@ -31,33 +31,32 @@ public class FilmController {
 
     @GetMapping("/{filmId}")
     public Film getFilmById(@PathVariable Long filmId) {
-        validator.checkFilmByPathVariableId(filmId);
+        validator.checkIfFilmExistById(filmId);
         return filmService.getFilmById(filmId);
     }
 
-    @GetMapping("/popular") // Тут нужно разобраться, что писать
+    @GetMapping("/popular")
     public List<Film> getMostPopularFilm(@RequestParam(defaultValue = "10") Long count) {
         return filmService.getMostPopularFilm(count);
     }
 
-    // добавление фильма
     @PostMapping
-    public Film postFilm(@Valid @RequestBody Film film) {
-        return filmService.postFilm(film);
+    public Film createFilm(@Valid @RequestBody Film film) {
+        return filmService.createFilm(film);
     }
 
     // обновление фильма
     @PutMapping
-    public Film putFilm(@Valid @RequestBody Film film) {
-        validator.checkIfFilmExistsById(film);
-        return filmService.putFilm(film);
+    public Film updateFilm(@Valid @RequestBody Film film) {
+        validator.checkIfFilmExists(film);
+        return filmService.updateFilm(film);
     }
 
     @PutMapping("/{filmId}/like/{userId}")
     public Film likeTheFilm(@PathVariable Long filmId,
                             @PathVariable Long userId) {
-        validator.checkFilmByPathVariableId(filmId);
-        validator.checkUserByPathVariableId(userId);
+        validator.checkIfFilmExistById(filmId);
+        validator.checkIfUserExistById(userId);
 
         return filmService.likeTheFilm(filmId, userId);
     }
@@ -65,8 +64,8 @@ public class FilmController {
     @DeleteMapping("/{filmId}/like/{userId}")
     public Film deleteLikeForFilm(@PathVariable Long filmId,
                                   @PathVariable Long userId) {
-        validator.checkFilmByPathVariableId(filmId);
-        validator.checkUserByPathVariableId(userId);
+        validator.checkIfFilmExistById(filmId);
+        validator.checkIfUserExistById(userId);
 
         return filmService.deleteLikeForFilm(filmId, userId);
     }
