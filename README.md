@@ -81,4 +81,4 @@ WHERE user_id IN (SELECT friend_id    -- Берем id друзей первог
 ``` 
 
 ## Инструкция по развёртыванию и системные требования
-JDK 11 и выше, Maven, Spring Boot 2.7.6, зависимости из pom файла приложения. 
+JDK 11 и выше, Maven, Spring Boot 2.7.6, зависимости из pom файла, настройки из application properties. 
