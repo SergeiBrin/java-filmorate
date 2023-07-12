@@ -69,7 +69,6 @@ public class InMemoryFilmStorageDao implements FilmStorageDao {
 
     private void updatePopularFilms(Film film) {
         // Сначала удаляю фильм из множества, а потом добавляю его снова - для сортировки.
-        // Как добавить обновленный фильм в сортировку, с одновременным удалением его старой версии я понять не могу.
         if (!popularFilms.isEmpty()) {
             popularFilms.removeIf(checkFilm -> checkFilm.getId() == film.getId());
         }

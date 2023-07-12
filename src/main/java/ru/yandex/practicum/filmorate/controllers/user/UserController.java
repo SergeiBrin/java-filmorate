@@ -23,7 +23,6 @@ public class UserController {
         this.validator = validator;
     }
 
-    // получение списка всех пользователей
     @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();
@@ -50,14 +49,12 @@ public class UserController {
         return userService.getListOfCommonFriends(userId, friendId);
     }
 
-    // создание пользователя
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
         validator.checkForName(user);
         return userService.createUser(user);
     }
 
-    // обновление пользователя
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
         validator.checkForName(user);

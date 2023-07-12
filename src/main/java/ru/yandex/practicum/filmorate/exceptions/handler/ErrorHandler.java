@@ -14,7 +14,7 @@ import ru.yandex.practicum.filmorate.exceptions.response.ErrorResponse;
 public class ErrorHandler {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST) // Возможно здесь нужен код 500 RuntimeException
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleNumberFormatException(final NumberFormatException e) {
         log.warn(e.getMessage());
         return new ErrorResponse("Ошибка валидации. Отправьте в PathVariable число", e.getMessage());

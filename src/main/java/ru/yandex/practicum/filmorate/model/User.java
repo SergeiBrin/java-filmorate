@@ -14,10 +14,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class User {
-    private long id; // Может сделать Integer?
+    private long id;
     private String name; // Может быть пустым
     @NotBlank
-    @Pattern(regexp = "\\S+")
+    @Pattern(regexp = "\\S+") // Должно содержать хотя бы один непробельный символ
     private String login;
     @PastOrPresent
     private LocalDate birthday;

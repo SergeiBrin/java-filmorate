@@ -28,7 +28,7 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private long duration;
-    @NotNull // Под вопросом.
+    @NotNull
     @FilmIdMpaConstraint
     private Mpa mpa;
     @FilmIdGenreConstraint

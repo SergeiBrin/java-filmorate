@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 @Slf4j
 public class FriendshipDaoImpl implements FriendshipDao {
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public FriendshipDaoImpl(JdbcTemplate jdbcTemplate) {

@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 @Slf4j
 public class MpaDaoImpl implements MpaDao {
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public MpaDaoImpl(JdbcTemplate jdbcTemplate) {

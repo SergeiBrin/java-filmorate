@@ -16,7 +16,7 @@ import java.util.Set;
 @Component
 @Slf4j
 public class GenresDaoImpl implements GenresDao {
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public GenresDaoImpl(JdbcTemplate jdbcTemplate) {

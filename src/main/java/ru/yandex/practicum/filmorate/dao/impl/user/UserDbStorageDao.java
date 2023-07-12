@@ -98,7 +98,7 @@ public class UserDbStorageDao implements UserStorageDao {
     public User updateUser(User user) {
         String sqlQuery = "update users set name = ?, login = ?, birthday = ?, email = ? where user_id = ?";
 
-        jdbcTemplate.update(sqlQuery, // А что, если такого id в табице нет?
+        jdbcTemplate.update(sqlQuery,
                 user.getName(),
                 user.getLogin(),
                 user.getBirthday(),

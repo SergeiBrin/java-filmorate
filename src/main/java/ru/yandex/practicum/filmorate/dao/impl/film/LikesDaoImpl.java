@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 @Slf4j
 public class LikesDaoImpl implements LikesDao {
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public LikesDaoImpl(JdbcTemplate jdbcTemplate) {

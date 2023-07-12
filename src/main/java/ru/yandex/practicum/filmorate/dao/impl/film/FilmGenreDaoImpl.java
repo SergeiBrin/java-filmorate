@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.dao.film.FilmGenreDao;
 @Component
 @Slf4j
 public class FilmGenreDaoImpl implements FilmGenreDao {
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public FilmGenreDaoImpl(JdbcTemplate jdbcTemplate) {

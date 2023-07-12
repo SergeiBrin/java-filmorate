@@ -63,8 +63,6 @@ public class FilmDbStorageDao implements FilmStorageDao {
     public Set<Film> getPopularFilms() {
         // Альтернативный способ поиска популярных фильмов.
         // Сортировка идет с помощью таблиц films и likes ↓ ↓ ↓
-
-
         String sqlQuery = "select f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
                           "from films as f " +
                           "left outer join likes as l on f.film_id = l.film_id " +

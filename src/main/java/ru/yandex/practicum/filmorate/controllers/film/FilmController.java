@@ -23,7 +23,6 @@ public class FilmController {
         this.validator = validator;
     }
 
-    // получение всех фильмов
     @GetMapping
     public List<Film> getAllFilms() {
         return filmService.getAllFilms();
